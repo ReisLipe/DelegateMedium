@@ -1,5 +1,5 @@
 //
-//  MeusJogos.swift
+//  HomeViewController.swift
 //  DelegateMedium
 //
 //  Created by Joao Filipe Reis Justo da Silva on 05/04/25.
@@ -7,14 +7,18 @@
 
 import UIKit
 
-// MARK: - Funcionário: espera pelas ordens do patrão.
-class MeusJogosViewController: UIViewController, CompraJogoDelegate {
-
+// MARK: - Funcionário (delegado)
+/// A classe responsável por executar as tarefas descritas no delegate com base
+/// nas informações passadas pelo patrão (delegante).
+class HomeViewController: UIViewController, CompraJogoDelegate {
+    /// Perceba que HomeViewController está de acordo com CompraJogoDelegate. Isso
+    /// fica explícito quando temos `class HomeViewController: CompraJogoDelegate {}`.
     
     private var jogoImagem: UIImageView!
     private var jogoInfo: UILabel!
+    private var donoInfo: UILabel!
     private var btnComprar: UIButton!
-    private var jogoComprado = Jogo(nome: "Nenhum Jogo", desenvovledora: "", ano: "", dono: "", image: "")
+    private var jogoComprado = Jogo(nome: "Nenhum Jogo", desenvovledora: "", ano: "", dono: "", imagem: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,26 +26,26 @@ class MeusJogosViewController: UIViewController, CompraJogoDelegate {
         setupAcoes()
     }
     
+    // Ações dos componentes
     private func setupAcoes() {
         btnComprar.addTarget(self, action: #selector(abreCompraJogo), for: .touchUpInside)
     }
     
     func comprouJogo(_ jogo: Jogo) {
-        /// Toda vez que fizermos delegate?.comprouJogo() na view Patrão
-        /// Essa função daqui será chamada na view Funcionário
-        /// Isso acontece pois a view Funcionário se conforma ao delegate (CompraJogoDelegate)
-        /// E em `abreCompraJogo` se declara funcionária de `CompraJogoViewController`
+        /// Toda vez que o patrao chamar funcionario?.comprouJogo(), esta
+        /// exata função será executada
         self.jogoComprado = jogo
         resetUI()
         
-        print(jogoComprado.descricao())
+        print(jogoComprado.descricaoJogo())
+        print(jogoComprado.descricaoDono())
+        print("===========================")
     }
     
     @objc func abreCompraJogo() {
-        /// Aqui declaramos que o funcionário (delegado) da tela de compras será
-        /// nossa tela MeusJogosViewController
-        let telaDeCompra = CompraJogoViewController()
-        telaDeCompra.delegate = self
+        let telaDeCompra = LojaViewController()     /// Instancia LojaViewController
+        telaDeCompra.funcionario = self             /// Declara que o funcionário de LojaViewController
+                                                    /// será está classe (HomeViewController)
 
         // Configuração da Tela de Compra
         telaDeCompra.modalPresentationStyle = .pageSheet
@@ -53,31 +57,36 @@ class MeusJogosViewController: UIViewController, CompraJogoDelegate {
 
 
 // MARK: UI
-extension MeusJogosViewController {
+extension HomeViewController {
     private func resetUI() {
         /// remove UI antiga
         jogoImagem.removeFromSuperview()
         jogoInfo.removeFromSuperview()
+        donoInfo.removeFromSuperview()
         
         /// cria UI nova
-        self.jogoImagem = generateImageView(jogoComprado.image)
-        self.jogoInfo = generateLbl(text: jogoComprado.descricao())
+        self.jogoImagem = generateImageView(jogoComprado.imagem)
+        self.jogoInfo = generateLbl(text: jogoComprado.descricaoJogo())
+        self.donoInfo = generateLbl(text: jogoComprado.descricaoDono())
         
         /// adiciona UI nova na View
         self.view.addSubview(jogoImagem)
         self.view.addSubview(jogoInfo)
+        self.view.addSubview(donoInfo)
         setupConstraints()
     }
     
     private func setupUI() {
         self.view.backgroundColor = .white
         
-        jogoImagem = generateImageView(jogoComprado.image)
-        jogoInfo = generateLbl(text: jogoComprado.descricao())
+        jogoImagem = generateImageView(jogoComprado.imagem)
+        jogoInfo = generateLbl(text: jogoComprado.descricaoJogo())
+        donoInfo = generateLbl(text: jogoComprado.descricaoDono())
         btnComprar = generateBtn(btnName: "Comprar")
         
         self.view.addSubview(jogoImagem)
         self.view.addSubview(jogoInfo)
+        self.view.addSubview(donoInfo)
         self.view.addSubview(btnComprar)
         
         setupConstraints()
@@ -97,8 +106,13 @@ extension MeusJogosViewController {
         ])
         
         NSLayoutConstraint.activate([
+            donoInfo.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            donoInfo.topAnchor.constraint(equalTo: jogoInfo.bottomAnchor, constant: 10)
+        ])
+        
+        NSLayoutConstraint.activate([
             btnComprar.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            btnComprar.topAnchor.constraint(equalTo: jogoInfo.bottomAnchor, constant: 20),
+            btnComprar.topAnchor.constraint(equalTo: donoInfo.bottomAnchor, constant: 20),
             btnComprar.widthAnchor.constraint(equalToConstant: 120),
             btnComprar.heightAnchor.constraint(equalToConstant: 40),
         ])
@@ -132,5 +146,5 @@ extension MeusJogosViewController {
 }
 
 #Preview {
-    MeusJogosViewController()
+    HomeViewController()
 }

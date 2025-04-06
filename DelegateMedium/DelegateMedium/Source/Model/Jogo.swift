@@ -6,22 +6,26 @@
 //
 
 struct Jogo {
-    let nome: String
-    let desenvovledora: String
-    let ano: String
-    let dono: String
-    let image: String
+    private let nome: String
+    private let desenvovledora: String
+    private let ano: String
+    private let dono: String
+    let imagem: String
     
-    init(nome: String, desenvovledora: String, ano: String, dono: String, image: String) {
+    init(nome: String, desenvovledora: String, ano: String, dono: String, imagem: String) {
         self.nome = nome
         self.desenvovledora = desenvovledora
         self.ano = ano
         self.dono = dono
-        self.image = image
+        self.imagem = imagem
     }
     
-    func descricao() -> String {
-        return "Jogo: \(nome), \(desenvovledora) (\(ano)) - Dono: \(dono)"
+    func descricaoJogo() -> String {
+        return "Jogo: \(nome), \(desenvovledora) (\(ano))"
+    }
+    
+    func descricaoDono() -> String {
+        return "Dono: \(dono)"
     }
 }
 

@@ -8,15 +8,21 @@
 import UIKit
 
 //MARK: - Delegate:
+/// A lesgislação que diz o que deve ser feito pelo funcionário e pelo
+/// patrão.
 protocol CompraJogoDelegate: AnyObject {
     func comprouJogo(_ jogo: Jogo) -> Void
 }
 
 
-// MARK: - Patrão: ordena que o funcionário faça algo.
-class CompraJogoViewController: UIViewController {
-    // Delegate
-    weak var delegate: CompraJogoDelegate?
+// MARK: - Patrão (delegante)
+/// A classe resposável por delegar tarefas. Ela passará informaçãoes
+/// para o funcionário (delegado), para que esse seja capaz de realizar
+/// seu trabalho.
+class LojaViewController: UIViewController {
+
+    // Anúncio de vaga de trabalho (delegate ou delegado)
+    weak var funcionario: CompraJogoDelegate?
     
     // Campo de assinatura do nome do comprador.
     private var lblNomeComprador: UILabel!
@@ -25,9 +31,9 @@ class CompraJogoViewController: UIViewController {
     private var nomeDoComprador: String = ""
     
     /// Botões de escolha do jogo.
-    private var btnBF: UIButton!
-    private var btnCOD: UIButton!
-    private var btnMOH: UIButton!
+    private var btnCompraBF: UIButton!
+    private var btnCompraCOD: UIButton!
+    private var btnCompraMOH: UIButton!
     
     
     override func viewDidLoad() {
@@ -43,9 +49,9 @@ class CompraJogoViewController: UIViewController {
         btnConfirmar.addTarget(self, action: #selector(confirmouNome), for: .touchUpInside)
         
         // Ações dos componentes de compra de jogos
-        btnBF.addTarget(self, action: #selector(apertouBotãoComprarBattlefield), for: .touchUpInside)
-        btnCOD.addTarget(self, action: #selector(apertouBotãoComprarCallOfDuty), for: .touchUpInside)
-        btnMOH.addTarget(self, action: #selector(apertouBotãoComprarMedalOfHonor), for: .touchUpInside)
+        btnCompraBF.addTarget(self, action: #selector(apertouBotãoComprarBattlefield), for: .touchUpInside)
+        btnCompraCOD.addTarget(self, action: #selector(apertouBotãoComprarCallOfDuty), for: .touchUpInside)
+        btnCompraMOH.addTarget(self, action: #selector(apertouBotãoComprarMedalOfHonor), for: .touchUpInside)
     }
     
     @objc private func confirmouNome() {
@@ -55,52 +61,55 @@ class CompraJogoViewController: UIViewController {
         btnConfirmar.isHidden = true
         
         // Mostra os novos objetos
-        btnBF.isHidden = false
-        btnCOD.isHidden = false
-        btnMOH.isHidden = false
+        btnCompraBF.isHidden = false
+        btnCompraCOD.isHidden = false
+        btnCompraMOH.isHidden = false
     }
     
     @objc private func onNameEditingChanged(_ sender: UITextField) {
         self.nomeDoComprador = sender.text ?? ""
     }
     
+    
+    /// Essas funções abaixo são chamadas quando os seus respectivos
+    /// botões são apertados. Elas são responsáveis por chamar o
+    /// método do funcionario (`funcionario?.comprouJogo`), quando esse
+    /// método é chamado, ele informa a view que implementa o
+    /// `ComprouJogoDelegate`.
     @objc private func apertouBotãoComprarBattlefield() {
-        let bf = Jogo(
-            nome: "Battlefield 2",
-            desenvovledora: "DICE",
-            ano: "2005",
-            dono: nomeDoComprador,
-            image: "BF"
-        )
-        delegate?.comprouJogo(bf)
-        dismiss(animated: true)
+        let bf = geraBF()               /// Gera o jogo
+        funcionario?.comprouJogo(bf)    /// Envia o jogo para o funcionário
+        dismiss(animated: true)         /// Fecha a tela
     }
     @objc private func apertouBotãoComprarCallOfDuty() {
-        let cod = Jogo(
-            nome: "Call Of Duty 2",
-            desenvovledora: "Infinity Ward",
-            ano: "2005",
-            dono: nomeDoComprador,
-            image: "COD"
-        )
-        delegate?.comprouJogo(cod)
-        dismiss(animated: true)
+        let cod = geraCOD()             /// Gera o jogo
+        funcionario?.comprouJogo(cod)   /// Envia o jogo para o funcionário
+        dismiss(animated: true)         /// Fecha a tela
     }
     @objc private func apertouBotãoComprarMedalOfHonor() {
-        let bf = Jogo(
-            nome: "Medal Of Honor: Allied Assault",
-            desenvovledora: "2015",
-            ano: "2002",
-            dono: nomeDoComprador,
-            image: "MOH"
-        )
-        delegate?.comprouJogo(bf)
-        dismiss(animated: true)
+        let bf = geraMOH()              /// Gera o jogo
+        funcionario?.comprouJogo(bf)    /// Envia o jogo para o funcionário
+        dismiss(animated: true)         /// Fecha a tela
     }
 }
 
+
+// MARK: Gerador de Jogos
+extension LojaViewController {
+    private func geraBF() -> Jogo {
+        return Jogo(nome: "Battlefield 2", desenvovledora: "DICE", ano: "2005", dono: nomeDoComprador, imagem: "BF")
+    }
+    private func geraCOD() -> Jogo {
+        return Jogo(nome: "Call Of Duty 2", desenvovledora: "Infinity Ward", ano: "2005", dono: nomeDoComprador, imagem: "COD")
+    }
+    private func geraMOH() -> Jogo {
+        return Jogo(nome: "Medal Of Honor: Allied Assault", desenvovledora: "2015", ano: "2002", dono: nomeDoComprador, imagem: "MOH")
+    }
+}
+
+
 // MARK: UI
-extension CompraJogoViewController {
+extension LojaViewController {
     private func setupUI() {
         self.view.backgroundColor = .white
         
@@ -108,20 +117,20 @@ extension CompraJogoViewController {
         self.tfNomeComprador = generateTf(placeholder: "Seu nome")
         self.btnConfirmar = generateBtn(btnName: "Confirmar")
         
-        self.btnBF = generateBtn(btnName: "Battlefield 2")
-        self.btnCOD = generateBtn(btnName: "Call Of Duty 2")
-        self.btnMOH = generateBtn(btnName: "Medal Of Honor: Allied Assault")
+        self.btnCompraBF = generateBtn(btnName: "Battlefield 2")
+        self.btnCompraCOD = generateBtn(btnName: "Call Of Duty 2")
+        self.btnCompraMOH = generateBtn(btnName: "Medal Of Honor: Allied Assault")
         
         self.view.addSubview(lblNomeComprador)
         self.view.addSubview(tfNomeComprador)
         self.view.addSubview(btnConfirmar)
-        self.view.addSubview(btnBF)
-        self.view.addSubview(btnCOD)
-        self.view.addSubview(btnMOH)
+        self.view.addSubview(btnCompraBF)
+        self.view.addSubview(btnCompraCOD)
+        self.view.addSubview(btnCompraMOH)
         
-        btnBF.isHidden = true
-        btnCOD.isHidden = true
-        btnMOH.isHidden = true
+        btnCompraBF.isHidden = true
+        btnCompraCOD.isHidden = true
+        btnCompraMOH.isHidden = true
         
         NSLayoutConstraint.activate([
             lblNomeComprador.leadingAnchor.constraint(equalTo: tfNomeComprador.leadingAnchor),
@@ -145,24 +154,24 @@ extension CompraJogoViewController {
         let btnJogoWidth: CGFloat = 300
         let btnJogoHeight: CGFloat = 45
         NSLayoutConstraint.activate([
-            btnBF.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            btnBF.bottomAnchor.constraint(equalTo: btnCOD.topAnchor, constant: -16),
-            btnBF.widthAnchor.constraint(equalToConstant: btnJogoWidth),
-            btnBF.heightAnchor.constraint(equalToConstant: btnJogoHeight),
+            btnCompraBF.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            btnCompraBF.bottomAnchor.constraint(equalTo: btnCompraCOD.topAnchor, constant: -16),
+            btnCompraBF.widthAnchor.constraint(equalToConstant: btnJogoWidth),
+            btnCompraBF.heightAnchor.constraint(equalToConstant: btnJogoHeight),
         ])
         
         NSLayoutConstraint.activate([
-            btnCOD.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            btnCOD.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-            btnCOD.widthAnchor.constraint(equalToConstant: btnJogoWidth),
-            btnCOD.heightAnchor.constraint(equalToConstant: btnJogoHeight),
+            btnCompraCOD.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            btnCompraCOD.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            btnCompraCOD.widthAnchor.constraint(equalToConstant: btnJogoWidth),
+            btnCompraCOD.heightAnchor.constraint(equalToConstant: btnJogoHeight),
         ])
         
         NSLayoutConstraint.activate([
-            btnMOH.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            btnMOH.topAnchor.constraint(equalTo: btnCOD.bottomAnchor, constant: 16),
-            btnMOH.widthAnchor.constraint(equalToConstant: btnJogoWidth),
-            btnMOH.heightAnchor.constraint(equalToConstant: btnJogoHeight),
+            btnCompraMOH.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            btnCompraMOH.topAnchor.constraint(equalTo: btnCompraCOD.bottomAnchor, constant: 16),
+            btnCompraMOH.widthAnchor.constraint(equalToConstant: btnJogoWidth),
+            btnCompraMOH.heightAnchor.constraint(equalToConstant: btnJogoHeight),
         ])
     }
     
@@ -194,6 +203,6 @@ extension CompraJogoViewController {
 }
 
 #Preview {
-    CompraJogoViewController()
+    LojaViewController()
 }
 

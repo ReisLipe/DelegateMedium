@@ -45,7 +45,7 @@ class HomeViewController: UIViewController, CompraJogoDelegate {
     @objc func abreCompraJogo() {
         let loja = LojaViewController()     /// Instancia LojaViewController
         loja.funcionario = self             /// Declara que o funcionário de LojaViewController
-                                                    /// será está classe (HomeViewController)
+                                            /// será está classe (HomeViewController)
 
         // Configuração da Tela de Compra
         loja.modalPresentationStyle = .pageSheet

@@ -18,7 +18,7 @@ class HomeViewController: UIViewController, CompraJogoDelegate {
     private var jogoInfo: UILabel!
     private var donoInfo: UILabel!
     private var btnComprar: UIButton!
-    private var jogoComprado = Jogo(nome: "Nenhum Jogo", desenvovledora: "", ano: "", dono: "", imagem: "")
+    private var jogoComprado = Jogo(nome: "Nenhum Jogo", desenvovledora: "", ano: "", dono: "Não informado", imagem: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +35,7 @@ class HomeViewController: UIViewController, CompraJogoDelegate {
         /// Toda vez que o patrao chamar funcionario?.comprouJogo(), esta
         /// exata função será executada
         self.jogoComprado = jogo
-        resetUI()
+        atualizaUI()
         
         print(jogoComprado.descricaoJogo())
         print(jogoComprado.descricaoDono())
@@ -43,22 +43,22 @@ class HomeViewController: UIViewController, CompraJogoDelegate {
     }
     
     @objc func abreCompraJogo() {
-        let telaDeCompra = LojaViewController()     /// Instancia LojaViewController
-        telaDeCompra.funcionario = self             /// Declara que o funcionário de LojaViewController
+        let loja = LojaViewController()     /// Instancia LojaViewController
+        loja.funcionario = self             /// Declara que o funcionário de LojaViewController
                                                     /// será está classe (HomeViewController)
 
         // Configuração da Tela de Compra
-        telaDeCompra.modalPresentationStyle = .pageSheet
-        telaDeCompra.sheetPresentationController?.detents = [.medium()]
-        telaDeCompra.sheetPresentationController?.prefersGrabberVisible = true
-        present(telaDeCompra, animated: true)
+        loja.modalPresentationStyle = .pageSheet
+        loja.sheetPresentationController?.detents = [.medium()]
+        loja.sheetPresentationController?.prefersGrabberVisible = true
+        present(loja, animated: true)
     }
 }
 
 
 // MARK: UI
 extension HomeViewController {
-    private func resetUI() {
+    private func atualizaUI() {
         /// remove UI antiga
         jogoImagem.removeFromSuperview()
         jogoInfo.removeFromSuperview()
